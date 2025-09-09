@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Webpage Extractor</h1>
+<p class="muted">Extract main text to Markdown and images (resized to 800×800). Choose or create a destination under <code>/data</code>.</p>
+<div class="card">
+<form method="post" action="/extract">
+<div class="row">
+<div>
+<label for="url">Page URL</label>
+<input type="url" id="url" name="url" placeholder="https://example.com/article" required />
+</div>
+<div>
+<label for="destination">Destination Folder (under /data)</label>
+<select id="destination" name="destination">
+{% for d in destinations %}
+<option value="{{ d }}">{{ d }}</option>
+{% endfor %}
+</select>
+<small class="muted">Or specify a new folder name:</small>
+<input type="text" id="new_destination" name="new_destination" placeholder="e.g., exports/my-article" />
+</div>
+</div>
+<div style="margin-top:1rem">
+<button type="submit">Extract</button>
+</div>
+</form>
+</div>
+
+
+{% if result %}
+<h2>Result</h2>
+<p><strong>Saved images:</strong> {{ result.image_filenames|length }}</p>
+<p class="muted">Markdown preview:</p>
+<pre>{{ result.markdown }}</pre>
+{% endif %}
+{% endblock %}

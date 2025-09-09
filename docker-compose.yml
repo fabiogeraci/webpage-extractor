@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data # host data directory
+      - ./app:/app/app:rw
+    environment:
+      - BASE_DATA_DIR=/data
+    restart: unless-stopped

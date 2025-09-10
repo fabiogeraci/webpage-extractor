@@ -1,110 +1,113 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Webpage Extractor</h1>
-<p class="muted">Extract main text to Markdown and images (resized to 800×800). Choose a destination directory and folder.</p>
-<div class="card">
-<form method="post" action="/extract">
-<div class="row">
-<div>
-<label for="url">Page URL</label>
-<input type="url" id="url" name="url" placeholder="https://example.com/article" required />
-</div>
-<div>
-<label for="data_path">Destination Directory</label>
-<div style="display: flex; gap: 0.5rem; align-items: center;">
-<input type="text" id="data_path" name="data_path" value="{{ current_data_path }}" placeholder="{{ default_data_path }}" style="flex: 1;" />
-<button type="button" id="browse_button" style="padding: 0.5rem 1rem; white-space: nowrap;">Browse</button>
-</div>
-<small class="muted">Base directory where extracted content will be saved</small>
-</div>
-<div>
-<label for="destination">Destination Folder</label>
-<select id="destination" name="destination">
-{% for d in destinations %}
-<option value="{{ d }}">{{ d }}</option>
-{% endfor %}
-</select>
-<small class="muted">Subfolder within the destination directory:</small>
-<input type="text" id="new_destination" name="new_destination" placeholder="e.g., exports/my-article" />
-</div>
-</div>
-<div style="margin-top:1rem">
-<button type="submit">Extract</button>
-</div>
-</form>
-</div>
-
-
-{% if result %}
-<h2>Result</h2>
-<p><strong>Saved images:</strong> {{ result.image_filenames|length }}</p>
-<p class="muted">Markdown preview:</p>
-<pre>{{ result.markdown }}</pre>
-{% endif %}
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const browseButton = document.getElementById('browse_button');
-    const dataPathInput = document.getElementById('data_path');
+    <h1>Webpage Extractor</h1>
+    <p class="muted">Extract main text to Markdown and images (resized to 800×800). Choose a destination directory and folder.</p>
     
-    browseButton.addEventListener('click', function() {
-        // Create a hidden file input for directory selection
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.webkitdirectory = true; // Allow directory selection
-        input.style.display = 'none';
-        
-        input.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files.length > 0) {
-                // Get the directory path from the first file
-                const filePath = e.target.files[0].webkitRelativePath;
-                const directoryPath = filePath.split('/')[0];
+    <div class="card">
+        <form method="post" action="/extract">
+            <div class="row">
+                <div>
+                    <label for="url">Page URL</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com/article" required />
+                </div>
                 
-                // For security reasons, we can't get the full path directly
-                // So we'll show a message and let the user know they need to enter the full path
-                alert('Directory selected: ' + directoryPath + '\n\nNote: For security reasons, please enter the full path manually in the input field above.\n\nExample: /home/username/Documents/my-folder');
+                <div>
+                    <label for="data_path">Destination Directory</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="data_path" name="data_path" value="{{ current_data_path }}" placeholder="{{ default_data_path }}" style="flex: 1;" />
+                        <button type="button" id="browse_button" style="padding: 0.5rem 1rem; white-space: nowrap;">Browse</button>
+                    </div>
+                    <small class="muted">Base directory where extracted content will be saved</small>
+                </div>
                 
-                // You could also try to extract more path info if available
-                try {
-                    const fullPath = e.target.files[0].path || e.target.files[0].webkitRelativePath;
-                    if (fullPath && fullPath.includes('/')) {
-                        const pathParts = fullPath.split('/');
-                        pathParts.pop(); // Remove the filename
-                        const suggestedPath = pathParts.join('/');
-                        dataPathInput.value = suggestedPath;
+                <div>
+                    <label for="destination">Destination Folder</label>
+                    <select id="destination" name="destination">
+                        {% for d in destinations %}
+                            <option value="{{ d }}">{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                    <small class="muted">Subfolder within the destination directory:</small>
+                    <input type="text" id="new_destination" name="new_destination" placeholder="e.g., exports/my-article" />
+                </div>
+            </div>
+            
+            <div style="margin-top:1rem">
+                <button type="submit">Extract</button>
+            </div>
+        </form>
+    </div>
+
+    {% if result %}
+        <h2>Result</h2>
+        <p><strong>Saved images:</strong> {{ result.image_filenames|length }}</p>
+        <p class="muted">Markdown preview:</p>
+        <pre>{{ result.markdown }}</pre>
+    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const browseButton = document.getElementById('browse_button');
+            const dataPathInput = document.getElementById('data_path');
+            
+            browseButton.addEventListener('click', function() {
+                // Create a hidden file input for directory selection
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.webkitdirectory = true; // Allow directory selection
+                input.style.display = 'none';
+                
+                input.addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files.length > 0) {
+                        // Get the directory path from the first file
+                        const filePath = e.target.files[0].webkitRelativePath;
+                        const directoryPath = filePath.split('/')[0];
+                        
+                        // For security reasons, we can't get the full path directly
+                        // So we'll show a message and let the user know they need to enter the full path
+                        alert('Directory selected: ' + directoryPath + '\n\nNote: For security reasons, please enter the full path manually in the input field above.\n\nExample: /home/username/Documents/my-folder');
+                        
+                        // You could also try to extract more path info if available
+                        try {
+                            const fullPath = e.target.files[0].path || e.target.files[0].webkitRelativePath;
+                            if (fullPath && fullPath.includes('/')) {
+                                const pathParts = fullPath.split('/');
+                                pathParts.pop(); // Remove the filename
+                                const suggestedPath = pathParts.join('/');
+                                dataPathInput.value = suggestedPath;
+                            }
+                        } catch (error) {
+                            console.log('Could not extract full path:', error);
+                        }
                     }
-                } catch (error) {
-                    console.log('Could not extract full path:', error);
-                }
+                });
+                
+                // Trigger the file picker
+                document.body.appendChild(input);
+                input.click();
+                document.body.removeChild(input);
+            });
+            
+            // Alternative: Use a more modern approach with showDirectoryPicker if available
+            if ('showDirectoryPicker' in window) {
+                browseButton.addEventListener('click', async function() {
+                    try {
+                        const directoryHandle = await window.showDirectoryPicker();
+                        const directoryName = directoryHandle.name;
+                        
+                        // For security, we can't get the full path, but we can show the directory name
+                        alert('Directory selected: ' + directoryName + '\n\nPlease enter the full path manually in the input field above.\n\nExample: /home/username/Documents/' + directoryName);
+                        
+                        // Update the input with the directory name as a hint
+                        dataPathInput.value = dataPathInput.value + '/' + directoryName;
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.error('Error selecting directory:', error);
+                            alert('Error selecting directory. Please enter the path manually.');
+                        }
+                    }
+                });
             }
         });
-        
-        // Trigger the file picker
-        document.body.appendChild(input);
-        input.click();
-        document.body.removeChild(input);
-    });
-    
-    // Alternative: Use a more modern approach with showDirectoryPicker if available
-    if ('showDirectoryPicker' in window) {
-        browseButton.addEventListener('click', async function() {
-            try {
-                const directoryHandle = await window.showDirectoryPicker();
-                const directoryName = directoryHandle.name;
-                
-                // For security, we can't get the full path, but we can show the directory name
-                alert('Directory selected: ' + directoryName + '\n\nPlease enter the full path manually in the input field above.\n\nExample: /home/username/Documents/' + directoryName);
-                
-                // Update the input with the directory name as a hint
-                dataPathInput.value = dataPathInput.value + '/' + directoryName;
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    console.error('Error selecting directory:', error);
-                    alert('Error selecting directory. Please enter the path manually.');
-                }
-            }
-        });
-    }
-});
-</script>
+    </script>
 {% endblock %}

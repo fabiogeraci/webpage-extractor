@@ -164,3 +164,7 @@ The application includes:
 ## License
 
 This project is open source. Please check the license file for details.
+
+## TODO
+
+- [ ] Fix the selector button for accordion content extraction.

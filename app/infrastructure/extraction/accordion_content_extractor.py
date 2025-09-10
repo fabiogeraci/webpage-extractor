@@ -9,6 +9,7 @@ class AccordionContentExtractor(ContentExtractorPort):
     """
     Enhanced content extractor that captures both main content and hidden accordion content.
     Specifically designed to extract content from <details>/<summary> accordion elements.
+    Now includes specific extraction for "Ingredients" and "How to use" sections.
     """
     
     def extract_markdown(self, html: str, base_url: str) -> str:
@@ -85,15 +86,45 @@ class AccordionContentExtractor(ContentExtractorPort):
                     "content": content_text
                 })
         
-        # Convert to markdown
+        # Convert to markdown with specific handling for Ingredients and How to use
         if accordion_sections:
             markdown_sections = []
-            markdown_sections.append("## Additional Information")
+            
+            # Separate sections into specific categories
+            ingredients_sections = []
+            how_to_use_sections = []
+            other_sections = []
             
             for section in accordion_sections:
-                markdown_sections.append(f"### {section['title']}")
-                markdown_sections.append(section['content'])
-                markdown_sections.append("")  # Empty line for spacing
+                title_lower = section['title'].lower()
+                if 'ingredient' in title_lower:
+                    ingredients_sections.append(section)
+                elif any(keyword in title_lower for keyword in ['how to use', 'usage', 'directions', 'instructions']):
+                    how_to_use_sections.append(section)
+                else:
+                    other_sections.append(section)
+            
+            # Add Ingredients section if found
+            if ingredients_sections:
+                markdown_sections.append("## Ingredients")
+                for section in ingredients_sections:
+                    markdown_sections.append(section['content'])
+                    markdown_sections.append("")  # Empty line for spacing
+            
+            # Add How to use section if found
+            if how_to_use_sections:
+                markdown_sections.append("## How to use")
+                for section in how_to_use_sections:
+                    markdown_sections.append(section['content'])
+                    markdown_sections.append("")  # Empty line for spacing
+            
+            # Add other sections under Additional Information
+            if other_sections:
+                markdown_sections.append("## Additional Information")
+                for section in other_sections:
+                    markdown_sections.append(f"### {section['title']}")
+                    markdown_sections.append(section['content'])
+                    markdown_sections.append("")  # Empty line for spacing
             
             return "\n".join(markdown_sections)
         

@@ -6,6 +6,8 @@ services:
     volumes:
       - ./data:/data # host data directory
       - ./app:/app/app:rw
+      - /:/host # mount host filesystem for data path selection
     environment:
       - BASE_DATA_DIR=/data
+      - DEFAULT_DATA_DIR=/data
     restart: unless-stopped

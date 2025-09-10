@@ -7,7 +7,16 @@ from ...config import settings
 class FilesystemStorage(StoragePort):
     def __init__(self, base_dir: str | None = None) -> None:
         self.base_dir = base_dir or settings.base_data_dir
-        os.makedirs(self.base_dir, exist_ok=True)
+        # Ensure the directory exists and is accessible
+        try:
+            os.makedirs(self.base_dir, exist_ok=True)
+            # Test write access
+            test_file = os.path.join(self.base_dir, ".test_write")
+            with open(test_file, "w") as f:
+                f.write("test")
+            os.remove(test_file)
+        except (OSError, PermissionError) as e:
+            raise ValueError(f"Cannot access or create directory '{self.base_dir}': {e}")
 
 
     def list_destinations(self) -> list[str]:

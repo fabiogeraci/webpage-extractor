@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from ..application.extract_usecase import ExtractUseCase
 from ..infrastructure.storage.filesystem_storage import FilesystemStorage
 from ..infrastructure.http.httpx_client import HttpxClient
-from ..infrastructure.extraction.trafilatura_markdown_extractor import TrafilaturaMarkdownExtractor
+from ..infrastructure.extraction.accordion_content_extractor import AccordionContentExtractor
 from ..infrastructure.extraction.image_extractor import ImageExtractor
 from ..config import settings
 
@@ -36,7 +36,7 @@ async def extract(request: Request,
         
         # Create all dependencies manually
         http = HttpxClient()
-        content_ext = TrafilaturaMarkdownExtractor()
+        content_ext = AccordionContentExtractor()
         image_ext = ImageExtractor()
         
         # Create storage with the user's destination path as base_dir

@@ -15,38 +15,29 @@ def _storage(data_path: str = None) -> FilesystemStorage:
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request, data_path: str = None):
-    storage = _storage(data_path)
+async def index(request: Request):
     return templates.TemplateResponse("index.html", {
         "request": request, 
-        "destinations": storage.list_destinations(), 
-        "result": None,
-        "current_data_path": data_path or settings.default_data_dir,
-        "default_data_path": settings.default_data_dir
+        "result": None
     })
 
 
 @router.post("/extract", response_class=HTMLResponse)
 async def extract(request: Request,
                         url: str = Form(...),
-                        destination: str = Form(""),
                         new_destination: str = Form(""),
-                        data_path: str = Form(""),
                         usecase: ExtractUseCase = Depends()):
-    dest_name = new_destination or destination or "exports"
-    selected_data_path = data_path or settings.default_data_dir
+    # Use the new_destination as the full path, or default to exports folder
+    dest_path = new_destination or "exports"
     
-    # Create storage with selected data path
-    storage = _storage(selected_data_path)
+    # Create storage with the specified path
+    storage = _storage(dest_path)
     
     # Update the usecase with the new storage
     usecase.storage = storage
     
-    result = await usecase.execute(url=url, destination_name=dest_name)
+    result = await usecase.execute(url=url, destination_name="")
     return templates.TemplateResponse("index.html", {
         "request": request, 
-        "destinations": storage.list_destinations(), 
-        "result": result,
-        "current_data_path": selected_data_path,
-        "default_data_path": settings.default_data_dir
+        "result": result
     })

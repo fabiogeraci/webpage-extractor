@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>Webpage Extractor</h1>
-    <p class="muted">Extract main text to Markdown and images (resized to 800×800). Choose a destination directory and folder.</p>
+    <p class="muted">Extract main text to Markdown and images (resized to 800×800). Choose a destination folder.</p>
     
     <div class="card">
         <form method="post" action="/extract">
@@ -12,23 +12,12 @@
                 </div>
                 
                 <div>
-                    <label for="data_path">Destination Directory</label>
+                    <label for="destination">Destination Folder</label>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="text" id="data_path" name="data_path" value="{{ current_data_path }}" placeholder="{{ default_data_path }}" style="flex: 1;" />
+                        <input type="text" id="new_destination" name="new_destination" placeholder="e.g., /home/user/Documents/my-extractions" style="flex: 1;" />
                         <button type="button" id="browse_button" style="padding: 0.5rem 1rem; white-space: nowrap;">Browse</button>
                     </div>
-                    <small class="muted">Base directory where extracted content will be saved</small>
-                </div>
-                
-                <div>
-                    <label for="destination">Destination Folder</label>
-                    <select id="destination" name="destination">
-                        {% for d in destinations %}
-                            <option value="{{ d }}">{{ d }}</option>
-                        {% endfor %}
-                    </select>
-                    <small class="muted">Subfolder within the destination directory:</small>
-                    <input type="text" id="new_destination" name="new_destination" placeholder="e.g., exports/my-article" />
+                    <small class="muted">Full path where extracted content will be saved</small>
                 </div>
             </div>
             
@@ -48,7 +37,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const browseButton = document.getElementById('browse_button');
-            const dataPathInput = document.getElementById('data_path');
+            const destinationInput = document.getElementById('new_destination');
             
             browseButton.addEventListener('click', function() {
                 // Create a hidden file input for directory selection
@@ -74,7 +63,7 @@
                                 const pathParts = fullPath.split('/');
                                 pathParts.pop(); // Remove the filename
                                 const suggestedPath = pathParts.join('/');
-                                dataPathInput.value = suggestedPath;
+                                destinationInput.value = suggestedPath;
                             }
                         } catch (error) {
                             console.log('Could not extract full path:', error);
@@ -99,7 +88,7 @@
                         alert('Directory selected: ' + directoryName + '\n\nPlease enter the full path manually in the input field above.\n\nExample: /home/username/Documents/' + directoryName);
                         
                         // Update the input with the directory name as a hint
-                        dataPathInput.value = dataPathInput.value + '/' + directoryName;
+                        destinationInput.value = destinationInput.value + '/' + directoryName;
                     } catch (error) {
                         if (error.name !== 'AbortError') {
                             console.error('Error selecting directory:', error);

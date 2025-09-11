@@ -14,11 +14,9 @@
                 <div>
                     <label for="destination">Destination Folder</label>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <input type="text" id="new_destination" name="new_destination" placeholder="e.g., /home/user/Documents/my-extractions" style="flex: 1;" />
-                        <label for="file_input" style="padding: 0.5rem 1rem; white-space: nowrap; background: #111; color: #fff; border-radius: 10px; border: 1px solid #444; cursor: pointer; margin: 0;">Select Folder</label>
-                        <input type="file" id="file_input" webkitdirectory multiple style="display: none;" />
+                        <input type="text" id="new_destination" name="new_destination" placeholder="e.g., /home/user/Documents/my-extractions or C:\Users\you\Documents\my-extractions" style="flex: 1;" />
                     </div>
-                    <small class="muted">Full path where extracted content will be saved</small>
+                    <small class="muted">Enter the full absolute path where extracted content will be saved.</small>
                 </div>
             </div>
             
@@ -49,52 +47,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const destinationInput = document.getElementById('new_destination');
-            const fileInput = document.getElementById('file_input');
-            
-            console.log('DOM loaded, elements found:', {
-                destinationInput: !!destinationInput,
-                fileInput: !!fileInput
-            });
-            
-            // Set up the file input event listener
-            fileInput.addEventListener('change', function(e) {
-                console.log('File input changed:', e.target.files);
-                console.log('Files length:', e.target.files ? e.target.files.length : 0);
-                
-                if (e.target.files && e.target.files.length > 0) {
-                    const firstFile = e.target.files[0];
-                    console.log('First file:', firstFile);
-                    console.log('webkitRelativePath:', firstFile.webkitRelativePath);
-                    
-                    // Get the directory path from the first file
-                    const filePath = firstFile.webkitRelativePath;
-                    const directoryPath = filePath ? filePath.split('/')[0] : 'selected-folder';
-                    
-                    console.log('Directory selected:', directoryPath);
-                    
-                    // Set the directory name in the input field
-                    destinationInput.value = directoryPath;
-                    destinationInput.placeholder = `Enter full path for: ${directoryPath}`;
-                    destinationInput.focus();
-                    
-                    // Add a visual indicator that a directory was selected
-                    destinationInput.style.borderColor = '#4CAF50';
-                    destinationInput.style.backgroundColor = '#f0fff0';
-                    setTimeout(() => {
-                        destinationInput.style.borderColor = '';
-                        destinationInput.style.backgroundColor = '';
-                    }, 3000);
-                    
-                    // Show a success message
-                    const message = `✅ SUCCESS! Directory Selected: "${directoryPath}"\n\nThis directory will be used to save all extracted webpage content.\n\n⚠️ For security reasons, browsers don't provide the full path.\nPlease enter the complete path manually below.`;
-                    alert(message);
-                } else {
-                    console.log('No files selected');
-                    alert('No files were selected. Please try again.');
-                }
-            });
-            
-            // Add some visual feedback when typing in the destination field
             destinationInput.addEventListener('input', function() {
                 if (this.value.trim()) {
                     this.style.borderColor = '#2196F3';
@@ -102,14 +54,6 @@
                     this.style.borderColor = '';
                 }
             });
-            
-            // Add click handler to the label for debugging
-            const selectButton = document.querySelector('label[for="file_input"]');
-            if (selectButton) {
-                selectButton.addEventListener('click', function() {
-                    console.log('Select folder button clicked');
-                });
-            }
         });
     </script>
 {% endblock %}
